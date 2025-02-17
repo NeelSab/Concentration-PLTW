@@ -93,42 +93,50 @@ public class Game
    * @return true if user has made a valid choice, false otherwise
    */
 
-  private boolean getTile(boolean firstChoice)
-  {
-    int num1 = 0;
-    int num2 = 0;
-        
-    if (in.hasNextInt())
-      num1 = in.nextInt();
-    else
-      quitGame();
-  
-    if (in.hasNextInt())
-      num2 = in.nextInt();
-     else
-      quitGame();
-
-    in.reset(); // ignore any extra input
-
-    if (!board.validateSelection(num1, num2))
-    {
-      System.out.print("Invalid input, please try again. ");
-      wait(2);
-      return false;
+   private boolean getTile(boolean firstChoice) {
+    if (!in.hasNextLine()) {
+        quitGame();
     }
-    if (firstChoice)   
-    {
-      row1 = num1;
-      col1 = num2;
-    }
-    else 
-    {
-      row2 = num1;
-      col2 = num2;
-    }
-    return true;
-  }
+    
+    String input = in.nextLine().trim();
+    String[] parts = input.split("\\s+"); // Split by spaces
 
+    if (parts.length != 2) {
+        System.out.print("Invalid input, please enter row and column separated by a space. ");
+        wait(2);
+        return false;
+    }
+
+    try {
+        int num1 = Integer.parseInt(parts[0]);
+        int num2 = Integer.parseInt(parts[1]);
+
+        if (!board.validateSelection(num1, num2)) {
+            System.out.print("Invalid selection, please try again. ");
+            wait(2);
+            return false;
+        }
+
+        if (firstChoice) {
+            row1 = num1;
+            col1 = num2;
+        } else {
+            row2 = num1;
+            col2 = num2;
+            if (row1 == row2 && col1 == col2) {
+                System.out.println("You must choose a different second tile.");
+                wait(2);
+                return false;
+            }
+        }
+
+        return true;
+    } catch (NumberFormatException e) {
+        System.out.print("Invalid input, please enter numbers only. ");
+        wait(2);
+        return false;
+    }
+}
   /**
    * Clear the console and show the game board
    */
